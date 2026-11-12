@@ -264,6 +264,7 @@ public class GameStateConverter {
      * The combat reward screen state object contains:
      * "rewards" (list): A list of reward objects, each of which contains:
      * - "reward_type" (string): The name of the RewardItem.RewardType enum for the reward
+     * - "claimable" (boolean): False when the reward cannot be taken right now (full potion belt)
      * - "gold" (int): The amount of gold in the reward, if applicable
      * - "relic" (object): The relic in the reward, if applicable
      * - "potion" (object): The potion in the reward, if applicable
@@ -276,6 +277,8 @@ public class GameStateConverter {
         for(RewardItem reward : AbstractDungeon.combatRewardScreen.rewards) {
             HashMap<String, Object> jsonReward = new HashMap<>();
             jsonReward.put("reward_type", reward.type.name());
+            boolean claimable = reward.type != RewardItem.RewardType.POTION || ChoiceScreenUtils.hasEmptyPotionSlot();
+            jsonReward.put("claimable", claimable);
             switch(reward.type) {
                 case GOLD:
                 case STOLEN_GOLD:
@@ -362,6 +365,7 @@ public class GameStateConverter {
         for(StorePotion potion : ChoiceScreenUtils.getShopScreenPotions()) {
             HashMap<String, Object> jsonPotion = convertPotionToJson(potion.potion);
             jsonPotion.put("price", potion.price);
+            jsonPotion.put("claimable", ChoiceScreenUtils.hasEmptyPotionSlot());
             shopPotions.add(jsonPotion);
         }
         state.put("cards", shopCards);

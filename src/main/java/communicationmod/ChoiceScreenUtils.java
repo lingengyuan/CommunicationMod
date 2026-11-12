@@ -17,6 +17,8 @@ import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.map.DungeonMap;
 import com.megacrit.cardcrawl.map.MapRoomNode;
+import com.megacrit.cardcrawl.potions.AbstractPotion;
+import com.megacrit.cardcrawl.potions.PotionSlot;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.rewards.chests.AbstractChest;
@@ -158,7 +160,7 @@ public class ChoiceScreenUtils {
         return lowerCaseChoices;
     }
 
-    public static void executeChoice(int choice_index) {
+    public static void executeChoice(int choice_index) throws InvalidCommandException {
         ChoiceType choiceType = getCurrentChoiceType();
         switch (choiceType) {
             case EVENT:
@@ -521,8 +523,27 @@ public class ChoiceScreenUtils {
         return choices;
     }
 
-    public static void makeCombatRewardChoice(int choice) {
+    /**
+     * Whether the player's potion belt still has a free slot. The game exposes no helper for
+     * this, so count the non-placeholder entries against the slot total.
+     */
+    public static boolean hasEmptyPotionSlot() {
+        int used = 0;
+        for(AbstractPotion potion : AbstractDungeon.player.potions) {
+            if(!(potion instanceof PotionSlot)) {
+                used++;
+            }
+        }
+        return used < AbstractDungeon.player.potionSlots;
+    }
+
+    public static void makeCombatRewardChoice(int choice) throws InvalidCommandException {
         RewardItem reward = AbstractDungeon.combatRewardScreen.rewards.get(choice);
+        // Setting isDone on a potion reward with a full belt silently does nothing: the game
+        // refuses the potion, resets the flag, and no state change is ever emitted.
+        if(reward.type == RewardItem.RewardType.POTION && !hasEmptyPotionSlot()) {
+            throw new InvalidCommandException("Cannot claim potion reward: all potion slots are full.");
+        }
         reward.isDone = true;
     }
 
@@ -641,7 +662,7 @@ public class ChoiceScreenUtils {
         return choices;
     }
 
-    public static void makeShopScreenChoice(int choice) {
+    public static void makeShopScreenChoice(int choice) throws InvalidCommandException {
         ArrayList<Object> shopItems = getAvailableShopItems();
         Object shopItem = shopItems.get(choice);
         if (shopItem instanceof String) {
@@ -658,6 +679,10 @@ public class ChoiceScreenUtils {
             StoreRelic relic = (StoreRelic) shopItem;
             relic.relic.hb.clicked = true;
         } else if (shopItem instanceof StorePotion) {
+            // The shop only plays a "no room" sound and returns, leaving the state untouched.
+            if(!hasEmptyPotionSlot()) {
+                throw new InvalidCommandException("Cannot buy potion: all potion slots are full.");
+            }
             StorePotion potion = (StorePotion) shopItem;
             potion.potion.hb.clicked = true;
         }
