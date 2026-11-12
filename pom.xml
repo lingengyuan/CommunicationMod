@@ -3,19 +3,19 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>autoplay</groupId>
-    <artifactId>CommunicationMod</artifactId>
-    <version>1.2.1</version>
+    <groupId>stsai</groupId>
+    <artifactId>StsAI</artifactId>
+    <version>1.3.0</version>
     <packaging>jar</packaging>
-    <name>Communication Mod</name>
-    <description>Used to help external programs communicate with Slay the Spire</description>
+    <name>StsAI</name>
+    <description>Fork of Communication Mod: protocol bridge between Slay the Spire and external AI controllers</description>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <SlayTheSpire.version>11-30-2020</SlayTheSpire.version>
-        <ModTheSpire.version>3.18.1</ModTheSpire.version>
-        <BaseMod.version>5.27.0</BaseMod.version>
+        <SlayTheSpire.version>12-18-2022</SlayTheSpire.version>
+        <ModTheSpire.version>3.30.3</ModTheSpire.version>
+        <BaseMod.version>5.56.0</BaseMod.version>
     </properties>
 
     <dependencies>
@@ -48,15 +48,15 @@
     </dependencies>
 
     <build>
-        <finalName>CommunicationMod</finalName>
+        <finalName>StsAI</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.2</version>
+                <version>3.5.3</version>
                 <executions>
                     <execution>
-                        <id>CommunicationMod</id>
+                        <id>StsAI</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -65,7 +65,7 @@
                             <minimizeJar>true</minimizeJar>
                             <filters>
                                 <filter>
-                                    <artifact>autoplay:CommunicationMod</artifact>
+                                    <artifact>stsai:StsAI</artifact>
                                 </filter>
                             </filters>
                             <relocations>
@@ -75,25 +75,6 @@
                                 </relocation>
                             </relocations>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <copy file="target/CommunicationMod.jar" tofile="../_ModTheSpire/mods/CommunicationMod.jar"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

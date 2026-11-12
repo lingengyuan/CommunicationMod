@@ -62,7 +62,7 @@ public class CommunicationMod implements PostInitializeSubscriber, PostUpdateSub
             defaults.put(GAME_START_OPTION, Boolean.toString(false));
             defaults.put(INITIALIZATION_TIMEOUT_OPTION, Long.toString(DEFAULT_TIMEOUT));
             defaults.put(VERBOSE_OPTION, Boolean.toString(DEFAULT_VERBOSITY));
-            communicationConfig = new SpireConfig("CommunicationMod", "config", defaults);
+            communicationConfig = new SpireConfig("StsAI", "config", defaults);
             String command = communicationConfig.getString(COMMAND_OPTION);
             // I want this to always be saved to the file so people can set it more easily.
             if (command == null) {
@@ -216,7 +216,7 @@ public class CommunicationMod implements PostInitializeSubscriber, PostUpdateSub
                     }
                 });
         settingsPanel.addUIElement(verbosityOption);
-        BaseMod.registerModBadge(ImageMaster.loadImage("Icon.png"),"Communication Mod", "Forgotten Arbiter", null, settingsPanel);
+        BaseMod.registerModBadge(ImageMaster.loadImage("Icon.png"),"StsAI", "lingengyuan, Forgotten Arbiter", null, settingsPanel);
     }
 
     private void startCommunicationThreads() {
